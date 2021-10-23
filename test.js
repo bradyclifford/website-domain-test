@@ -2,19 +2,36 @@ function processDomainCount(stats) {
   if (stats.length === 0) return;
 
 
-  const splitUpStats = stats.map(stat => stat.split(','));
+  const splitUpStats = stats.map(stat => stat.split(',').slice(1));
 
   const totals = splitUpStats.reduce((accumulator, stat) => {
     if (stat.length !== 2) return;
     const [website, count] = stat;
+
+    const parseCount = parseInt(count);
+    if (isNaN(parseCount)) return accumulator;
+
     const existingCount = accumulator[website] || 0;
 
-    accumulator[website] = existingCount + count;
+    accumulator[website] = existingCount + parseCount;
+    return accumulator;
   }, {});
 
-  console.log(totals)
+  let parsedStates = [];
+  for(const [website, count] of Object.entries(totals)) {
+    const subjects = website.split('.');
 
-  return stats;
+    // Do we really need to add a single subject?
+    if (subjects.length < 3) {
+      parsedStates.push([website, count]);
+      continue;
+    }
+
+    // TODO: split up each subject and add to final array
+
+  }
+
+  return parsedStates;
 }
 
 console.table(processDomainCount([
