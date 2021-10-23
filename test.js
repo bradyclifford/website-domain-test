@@ -3,7 +3,7 @@ function processDomainCount(stats) {
 
   const splitUpStats = stats.map(stat => stat.split(',').slice(1));
 
-  const totals = splitUpStats.reduce((accumulator, stat) => {
+  const aggregateFullDomains = splitUpStats.reduce((accumulator, stat) => {
     if (stat.length !== 2) return;
     const [website, count] = stat;
 
@@ -13,26 +13,28 @@ function processDomainCount(stats) {
     const existingCount = accumulator[website] || 0;
 
     accumulator[website] = existingCount + parseCount;
+
     return accumulator;
   }, {});
 
-  let parsedStates = [];
-  for(const [website, count] of Object.entries(totals)) {
+  let splitSubjects = {};
+  for(const [website, count] of Object.entries(aggregateFullDomains)) {
     const subjects = website.split('.');
 
-    parsedStates.push(
-      subjects.reduce((accumulator, subject, index) => {
-        accumulator.push([
-          subjects.slice(index - subjects.length).join('.'),
-          count,
-        ])
+    splitSubjects = {
+      ...splitSubjects,
+      ...(subjects.reduce((accumulator, subject, index) => {
 
+        const composedSubjectName = subjects.slice(index - subjects.length).join('.');
+        const existingCount = splitSubjects[composedSubjectName] || 0;
+
+        accumulator[composedSubjectName] = existingCount + count;
         return accumulator;
-      }, [])
-    );
+      }, {}))
+    };
   }
 
-  return parsedStates.flat();
+  return Object.entries(splitSubjects);
 }
 
 console.table(processDomainCount([
