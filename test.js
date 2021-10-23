@@ -22,13 +22,21 @@ function processDomainCount(stats) {
     const subjects = website.split('.');
 
     // Do we really need to add a single subject?
-    if (subjects.length < 3) {
+    if (subjects.length < 2) {
       parsedStates.push([website, count]);
       continue;
     }
 
-    // TODO: split up each subject and add to final array
+    parsedStates.concat(
+      subjects.reduce((accumulator, subject, index) => {
+        accumulator.push([
+          subjects.slice(index - subjects.length),
+          count,
+        ])
 
+        return accumulator;
+      }, [])
+    );
   }
 
   return parsedStates;
