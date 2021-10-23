@@ -1,7 +1,18 @@
 function processDomainCount(stats) {
   if (stats.length === 0) return;
-  
-  // TODO: repeat what I already did
+
+
+  const splitUpStats = stats.map(stat => stat.split(','));
+
+  const totals = splitUpStats.reduce((accumulator, stat) => {
+    if (stat.length !== 2) return;
+    const [website, count] = stat;
+    const existingCount = accumulator[website] || 0;
+
+    accumulator[website] = existingCount + count;
+  }, {});
+
+  console.log(totals)
 
   return stats;
 }
