@@ -1,7 +1,6 @@
 function processDomainCount(stats) {
   if (stats.length === 0) return;
 
-
   const splitUpStats = stats.map(stat => stat.split(',').slice(1));
 
   const totals = splitUpStats.reduce((accumulator, stat) => {
@@ -21,16 +20,10 @@ function processDomainCount(stats) {
   for(const [website, count] of Object.entries(totals)) {
     const subjects = website.split('.');
 
-    // Do we really need to add a single subject?
-    if (subjects.length < 2) {
-      parsedStates.push([website, count]);
-      continue;
-    }
-
-    parsedStates.concat(
+    parsedStates.push(
       subjects.reduce((accumulator, subject, index) => {
         accumulator.push([
-          subjects.slice(index - subjects.length),
+          subjects.slice(index - subjects.length).join('.'),
           count,
         ])
 
@@ -39,12 +32,13 @@ function processDomainCount(stats) {
     );
   }
 
-  return parsedStates;
+  return parsedStates.flat();
 }
 
 console.table(processDomainCount([
   'UselessDate,www.google.com,140',
-  'UselessDate,www.google.com,140',
+  'UselessDate,www.google.com,130',
   'UselessDate,happy.com,140',
-  'UselessDate,fun.times.yahoo.com,140'
+  'UselessDate,fun.times.yahoo.com,140',
+  'UselessDate,mail.google.com,130'
 ]));
